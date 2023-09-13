@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -eu
+
+TESTS="*.demo"
+
+for prog in $TESTS
+do
+    cfile=
+    echo "Testing $prog"
+    java -jar sharedemo.jar $prog
+    gcc "${prog%.demo}.c" -o "${prog%.demo}.out"
+    "./${prog%.demo}.out"
+    echo ""
+done

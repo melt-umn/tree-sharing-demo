@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+silver -o sharedemo.jar -I grammars $@ edu:umn:cs:melt:sharedemo:driver
+

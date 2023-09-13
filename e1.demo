@@ -1,0 +1,7 @@
+var a : int = 1 + 2 + 3;
+var c : int =
+  let
+    b = a - 1
+  in a + ~b - ~a
+  end;
+print(c);

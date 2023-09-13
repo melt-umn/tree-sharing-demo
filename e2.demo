@@ -1,0 +1,14 @@
+var a : int = 20961;
+var b : int = 408123;
+
+while (~(b == 0)) {
+  if (a < b) {
+    var c : int = a;
+    a := b;
+    b := c;
+  } else {
+    a := a - b;
+  }
+}
+
+print(a);
