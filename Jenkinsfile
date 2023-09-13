@@ -12,7 +12,7 @@ try {
   stage ("Checkout") {
     checkout scm
     melt.clearGenerated()
-    sh "rm -f *.jar"  
+    sh "rm -f *.jar *.c *.out"  
   }
 
   stage ("Build") {
@@ -34,7 +34,7 @@ catch (e) {
   melt.handle(e)
 }
 finally {
-  melt.notify(job: 'rewriting-optimization-demo')
+  melt.notify(job: 'tree-sharing-demo')
 }
 } // node
 
