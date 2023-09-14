@@ -43,3 +43,15 @@ top::Stmt ::= e::Expr
 {
   top.ctrans = pp"""printf("%d\n", ${e.ctrans});""";
 }
+
+aspect production block
+top::Stmt ::= s::Stmt
+{
+  top.ctrans = braces(groupnestlines(2, s.ctrans));
+}
+
+aspect production errorStmt
+top::Stmt ::= msg::[Message]
+{
+  top.ctrans = pp"/*err*/";
+}

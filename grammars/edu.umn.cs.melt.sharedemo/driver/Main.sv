@@ -3,16 +3,12 @@ grammar edu:umn:cs:melt:sharedemo:driver;
 imports silver:langutil;
 imports silver:langutil:pp;
 
-imports edu:umn:cs:melt:sharedemo:concretesyntax;
-imports edu:umn:cs:melt:sharedemo:host;
+imports edu:umn:cs:melt:sharedemo:host:concretesyntax;
+imports edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 imports edu:umn:cs:melt:sharedemo:translation;
 
-parser parse::Root_c {
-  edu:umn:cs:melt:sharedemo:concretesyntax;
-}
-
-function main
-IO<Integer> ::= args::[String]
+function driver
+IO<Integer> ::= parse::(ParseResult<Root_c> ::= String String) args::[String]
 {
   local fileName :: String = head(args);
   local cFileName :: String = head(explode(".", fileName)) ++ ".c";

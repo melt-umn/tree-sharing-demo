@@ -1,7 +1,7 @@
-grammar edu:umn:cs:melt:sharedemo:concretesyntax;
+grammar edu:umn:cs:melt:sharedemo:host:concretesyntax;
 
 imports silver:langutil;
-imports edu:umn:cs:melt:sharedemo:host;
+imports edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 
 ignore terminal WhiteSpace_t /[\n\r\t\ ]+/;
 ignore terminal Comment_t /--.*/;
@@ -15,7 +15,9 @@ terminal Lt_t '<' association = none, precedence = 2;
 terminal Eq_t '==' association = none, precedence = 2;
 terminal Plus_t '+' association = left, precedence = 3;
 terminal Minus_t '-' association = left, precedence = 3;
-terminal Neg_t '~' precedence = 4;
+terminal Times_t '*' association = left, precedence = 4;
+terminal Div_t '/' association = left, precedence = 4;
+terminal Neg_t '~' precedence = 5;
 
 terminal LParen_t '(';
 terminal RParen_t ')';
@@ -34,7 +36,7 @@ terminal Let_t 'let' lexer classes {Reserved};
 terminal In_t 'in' lexer classes {Reserved};
 terminal End_t 'end' lexer classes {Reserved};
 terminal If_t 'if' lexer classes {Reserved};
-terminal Else_t 'else' lexer classes {Reserved};
+terminal Else_t 'else' lexer classes {Reserved}, precedence = 2;
 terminal While_t 'while' lexer classes {Reserved};
 terminal Print_t 'print' lexer classes {Reserved};
 terminal True_t 'true' lexer classes {Reserved};
@@ -42,39 +44,52 @@ terminal False_t 'false' lexer classes {Reserved};
 terminal Int_t 'int';
 terminal Bool_t 'bool';
 
+terminal IfNoElse_t '' precedence = 1;
+
+-- Same as C
+ignore terminal LineComment_t /[/][/].*/;
+ignore terminal BlockComment_t /[/][*]([^*]|[\r\n]|([*]+([^*/]|[\r\n])))*[*]+[/]/;
+
 tracked nonterminal Root_c with ast<Root>;
 concrete production root_c
 top::Root_c ::= ss::Stmts_c
 { abstract root; }
 
-tracked nonterminal Stmts_c with ast<Stmt>;
+closed tracked nonterminal Stmts_c with ast<Stmt>;
 concrete productions top::Stmts_c
 | h::Stmt_c t::Stmts_c
   { abstract seq; }
-| s::Stmt_c
-  { top.ast = s.ast; }
+|
+  { abstract empty_; }
 
-tracked nonterminal Stmt_c with ast<Stmt>;
+closed tracked nonterminal Stmt_c with ast<Stmt>;
 concrete productions top::Stmt_c
 | 'var' id::Name_c ':' ty::Type_c '=' e::Expr_c ';'
   { abstract decl; }
 | id::Name_c ':=' e::Expr_c ';'
   { abstract assign; }
-| 'if' '(' c::Expr_c ')' '{' t::Stmts_c '}' 'else' '{' e::Stmts_c '}'
+| 'if' '(' c::Expr_c ')' t::Stmt_c 'else' e::Stmt_c
   { abstract ifThenElse; }
-| 'if' '(' c::Expr_c ')' '{' t::Stmts_c '}'
+| 'if' '(' c::Expr_c ')' t::Stmt_c
+  operator=IfNoElse_t
   { top.ast = ifThenElse(c.ast, t.ast, empty_()); }
 | 'while' '(' c::Expr_c ')' '{' body::Stmts_c '}'
   { abstract while; }
 | 'print' '(' c::Expr_c ')' ';'
   { abstract printInt; }
+| '{' s::Stmts_c '}'
+  { abstract block; }
 
-tracked nonterminal Expr_c with ast<Expr>;
+closed tracked nonterminal Expr_c with ast<Expr>;
 concrete productions top::Expr_c
 | e1::Expr_c '+' e2::Expr_c
   { abstract addInt; }
 | e1::Expr_c '-' e2::Expr_c
   { abstract subInt; }
+| e1::Expr_c '*' e2::Expr_c
+  { abstract mulInt; }
+| e1::Expr_c '/' e2::Expr_c
+  { abstract divInt; }
 | e1::Expr_c '&&' e2::Expr_c
   { abstract andOp; }
 | e1::Expr_c '||' e2::Expr_c
@@ -98,7 +113,7 @@ concrete productions top::Expr_c
 | '(' e::Expr_c ')'
   { top.ast = e.ast; }
 
-tracked nonterminal Exprs_c with ast<Exprs>;
+closed tracked nonterminal Exprs_c with ast<Exprs>;
 concrete productions top::Exprs_c
 | h::Expr_c ',' t::Exprs_c
   { abstract consExpr; }
@@ -107,12 +122,12 @@ concrete productions top::Exprs_c
 |
   { abstract nilExpr; }
 
-tracked nonterminal Name_c with ast<Name>;
+closed tracked nonterminal Name_c with ast<Name>;
 concrete productions top::Name_c
 | id::Identifier_t
   { top.ast = name(id.lexeme); }
 
-tracked nonterminal Type_c with ast<Type>;
+closed tracked nonterminal Type_c with ast<Type>;
 concrete productions top::Type_c
 | 'int'
   { abstract intType; }

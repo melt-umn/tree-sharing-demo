@@ -1,7 +1,9 @@
-grammar edu:umn:cs:melt:sharedemo:host;
+grammar edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 
 tracked nonterminal Stmt with pp, freeVars, env, defs, errors;
-propagate defs, errors on Stmt;
+flowtype Stmt = decorate {env}, forward {env}, pp {}, freeVars {decorate}, defs {decorate}, errors {decorate};
+propagate errors on Stmt;
+propagate defs on Stmt excluding ifThenElse, while, block;
 propagate env on Stmt excluding seq;
 
 production seq
@@ -48,6 +50,7 @@ top::Stmt ::= c::Expr t::Stmt e::Stmt
 {
   top.pp = pp"if (${c}) {${groupnestlines(2, t.pp)}} else {${groupnestlines(2, e.pp)}}";
   top.freeVars = c.freeVars ++ t.freeVars ++ e.freeVars;
+  top.defs := [];
   top.errors <- checkBool(c, "condition");
 }
 
@@ -56,6 +59,7 @@ top::Stmt ::= c::Expr body::Stmt
 {
   top.pp = pp"while (${c}) {${groupnestlines(2, body.pp)}}";
   top.freeVars = c.freeVars ++ body.freeVars;
+  top.defs := [];
   top.errors <- checkBool(c, "condition");
 }
 
@@ -65,4 +69,20 @@ top::Stmt ::= e::Expr
   top.pp = pp"print(${e})";
   top.freeVars = e.freeVars;
   top.errors <- checkInt(e, "print argument");
+}
+
+production block
+top::Stmt ::= s::Stmt
+{
+  top.pp = pp"{${groupnestlines(2, s.pp)}}";
+  top.freeVars = s.freeVars;
+  top.defs := [];
+}
+
+production errorStmt
+top::Stmt ::= msg::[Message]
+{
+  top.pp = pp"/*err*/";
+  top.freeVars = [];
+  top.errors <- msg;
 }

@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:sharedemo:host;
+grammar edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 
 import silver:util:treemap as tm;
 

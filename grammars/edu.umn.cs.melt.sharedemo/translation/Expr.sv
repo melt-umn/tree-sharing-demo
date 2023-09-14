@@ -15,6 +15,18 @@ top::Expr ::= e1::Expr e2::Expr
   top.ctrans = pp"(${e1.ctrans} - ${e2.ctrans})";
 }
 
+aspect production mulInt
+top::Expr ::= e1::Expr e2::Expr
+{
+  top.ctrans = pp"(${e1.ctrans} * ${e2.ctrans})";
+}
+
+aspect production divInt
+top::Expr ::= e1::Expr e2::Expr
+{
+  top.ctrans = pp"(${e1.ctrans} / ${e2.ctrans})";
+}
+
 aspect production andOp
 top::Expr ::= e1::Expr e2::Expr
 {
@@ -78,7 +90,7 @@ top::Expr ::=
 aspect production let_
 top::Expr ::= id::Name e::Expr body::Expr
 {
-  top.ctrans = box(groupnest(2, pp"({${e.type.ctrans} ${id} = ${box(e.ctrans)};\n${box(body.ctrans)};})"));
+  top.ctrans = pp"({${e.type.ctrans} ${id} = ${e.ctrans}; ${body.ctrans};})";
 }
 
 aspect production var

@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:sharedemo:host;
+grammar edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 
 biequality attribute typeEqualPartial, typeEqual with compareTo;
 tracked nonterminal Type with pp, compareTo<{compareTo}>, typeEqualPartial, typeEqual;

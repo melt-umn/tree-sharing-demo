@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:sharedemo:host;
+grammar edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 
 synthesized attribute freeVars::[String];
 synthesized attribute type::Type;
@@ -33,6 +33,26 @@ top::Expr ::= e1::Expr e2::Expr
   top.type = intType();
   top.errors <- checkInt(e1, "left operand to -");
   top.errors <- checkInt(e2, "right operand to -");
+}
+
+production mulInt
+top::Expr ::= e1::Expr e2::Expr
+{
+  top.pp = pp"${e1.wrapPP} * ${e2.wrapPP}";
+  top.freeVars = e1.freeVars ++ e2.freeVars;
+  top.type = intType();
+  top.errors <- checkInt(e1, "left operand to *");
+  top.errors <- checkInt(e2, "right operand to *");
+}
+
+production divInt
+top::Expr ::= e1::Expr e2::Expr
+{
+  top.pp = pp"${e1.wrapPP} / ${e2.wrapPP}";
+  top.freeVars = e1.freeVars ++ e2.freeVars;
+  top.type = intType();
+  top.errors <- checkInt(e1, "left operand to /");
+  top.errors <- checkInt(e2, "right operand to /");
 }
 
 production andOp
