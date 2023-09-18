@@ -3,9 +3,6 @@ grammar edu:umn:cs:melt:sharedemo:host:concretesyntax;
 imports silver:langutil;
 imports edu:umn:cs:melt:sharedemo:host:abstractsyntax;
 
-ignore terminal WhiteSpace_t /[\n\r\t\ ]+/;
-ignore terminal Comment_t /--.*/;
-
 terminal Identifier_t /[A-Za-z_][A-Za-z0-9_]*/;
 terminal Constant_t /[0-9]+/;
 
@@ -45,6 +42,9 @@ terminal Int_t 'int';
 terminal Bool_t 'bool';
 
 terminal IfNoElse_t '' precedence = 1;
+
+ignore terminal WhiteSpace_t /[\t\ ]+/;
+ignore terminal Newline_t /[\r]?\n/;
 
 -- Same as C
 ignore terminal LineComment_t /[/][/].*/;
