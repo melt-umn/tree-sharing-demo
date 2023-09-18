@@ -211,20 +211,3 @@ top::Expr ::= msg::[Message]
   top.type = errorType();
   top.errors <- msg;
 }
-
-tracked nonterminal Exprs with pps, env, errors, freeVars;
-propagate env, errors on Exprs;
-
-production consExpr
-top::Exprs ::= h::Expr t::Exprs
-{
-  top.pps = h.pp :: t.pps;
-  top.freeVars = h.freeVars ++ t.freeVars;
-}
-
-production nilExpr
-top::Exprs ::=
-{
-  top.pps = [];
-  top.freeVars = [];
-}

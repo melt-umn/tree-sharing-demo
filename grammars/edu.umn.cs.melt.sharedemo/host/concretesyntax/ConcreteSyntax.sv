@@ -24,7 +24,6 @@ terminal Decl_t '=';
 terminal Assign_t ':=';
 terminal Colon_t ':';
 terminal Semi_t ';';
-terminal Comma_t ',';
 
 lexer class Reserved dominates Identifier_t;
 
@@ -112,15 +111,6 @@ concrete productions top::Expr_c
   { abstract var; }
 | '(' e::Expr_c ')'
   { top.ast = e.ast; }
-
-closed tracked nonterminal Exprs_c with ast<Exprs>;
-concrete productions top::Exprs_c
-| h::Expr_c ',' t::Exprs_c
-  { abstract consExpr; }
-| h::Expr_c
-  { top.ast = consExpr(h.ast, nilExpr()); }
-|
-  { abstract nilExpr; }
 
 closed tracked nonterminal Name_c with ast<Name>;
 concrete productions top::Name_c
