@@ -1,14 +1,39 @@
-for i in 0 to 2 {
-  for j in 0 to 2 {
-    for k in 0 to 2 {
-      var b1 : bool = i == 1;
-      var b2 : bool = j == 1;
-      var b3 : bool = k == 1;
-      var res : bool = table { b1 && b3 : T F
-                               ~ b2     : T *
-                               b2 || b3 : F T };
-      if (res) print(1); else print(0);
-    }
-  }
-}
+// 5
+var a1 : bool = true;
+var a2 : bool = false;
+var a3 : bool = true;
 
+// 6
+var b1 : bool = true;
+var b2 : bool = true;
+var b3 : bool = false;
+
+// 3-bit ripple adder
+var c3 : bool = table { a3 : T F
+                        b3 : F T };
+var r2 : bool = table { a3 : T
+                        b3 : T };
+var c2 : bool = table { a2 : T F F T
+                        b2 : F T F T
+                        r2 : F F T T };
+var r1 : bool = table { a2 : T T *
+                        b2 : T * T
+                        r2 : * T T };
+var c1 : bool = table { a1 : T F F T
+                        b1 : F T F T
+                        r1 : F F T T };
+var c0 : bool = table { a1 : T T *
+                        b1 : T * T
+                        r1 : * T T };
+
+// Convert result to an integer
+var res : int = 0;
+if (c0) res := res + 1;
+res := res * 2;
+if (c1) res := res + 1;
+res := res * 2;
+if (c2) res := res + 1;
+res := res * 2;
+if (c3) res := res + 1;
+
+print(res);
